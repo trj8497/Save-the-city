@@ -1,0 +1,520 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/ioctl.h>
+#include<ncurses.h>
+#include<unistd.h>
+#include<ctype.h>
+#include<pthread.h>
+
+int height, width, def_row;
+
+pthread_mutex_t p_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct Defense_S
+{
+   int row;
+   int col;
+   char graphic[5];
+}Defense;
+
+Defense * defense;
+
+typedef struct Missile_S
+{
+   int row;
+   int col;
+   char graphic[1];
+}Missile;
+
+void config_building(int * layout)
+{
+  initscr();
+  noecho();
+  cbreak();
+  int i;
+
+  for (i = 0; i< width; i++) 
+  {
+    if( layout[i] == 2 ) 
+    {
+      move( height-2, i );
+      printw( "_" );
+      refresh();
+    } 
+    else 
+    {
+      int sameNum = 1, previous, next, l, check = 0, current;
+      for (l = i; l< width; l++) 
+      {
+        if (layout[i] == layout[l+1])
+          sameNum++;
+        else
+          break;
+      }   
+      if( l < width-1 ) 
+      {
+        next = layout[l+1];
+      }
+      else
+      {
+        next = 2;
+      }
+      if( i > 0 ) 
+      {
+         if( layout[i] == layout[i-1] ) 
+         {
+           sameNum++; 
+           previous = layout[i-2];
+         }
+         else 
+         {
+           previous = layout[i-1];
+         }
+       } 
+       else
+       { 
+         previous = 2;
+       }
+       current = i;
+       int z;                
+       if( previous > layout[i] ) 
+       {
+         if( next > layout[current] ) 
+         {
+           for( int x = 0; x <= sameNum-1; x++ ) 
+           {
+             move( height-layout[current], i );
+             printw( "_" );
+             refresh();
+             i++;
+           }
+
+          for( int x = 2; x < layout[i]; x++ )
+          {
+            move( height-x, i );
+            printw( "|" );
+            refresh();
+          }
+        }
+        else 
+        {
+          for( int x = 0; x <= sameNum-2; x++ ) 
+          {
+            move( height-layout[current], i );
+            printw( "_" );
+            refresh();
+            i++;
+          }
+          for( int x = 2; x < layout[i]; x++ )
+          {
+            move( height-x, i );
+            printw( "|" );
+            refresh();
+          } 
+        }
+      }
+      else
+      {
+        if(layout[i] != layout[i-1] ) 
+        {
+          for( z = 2; z < layout[i]; z++ ) 
+          {
+            move( height-z, i );
+            printw( "|" );
+            refresh();
+          }
+          i++;
+        }
+        else
+        {
+          check = 1;
+          if (next < layout[current])
+          {
+            for (int x = 0; x < sameNum-2; x++)
+            {
+              move(height-layout[current], i);
+	      printw("_");
+	      refresh();
+	      i++;
+            }
+            if (layout[i] == layout[current])
+            {
+              for (z = 2; z < layout[i]; z++)
+              {
+	         move(height-z, i);
+	         printw("|");
+	         refresh();
+              }
+	    }
+	  }
+	  else
+	  {
+            for (int x = 0; x < sameNum-1; x++)
+            {
+	       move(height-layout[current], i);
+	       printw("_");
+	       refresh();
+	       i++;
+	    }
+            for (int x = 2; x < layout[i]; x++)
+            {
+	       move(height-x, i);
+	       printw("|");
+	       refresh();
+            }
+	  }
+	}
+	if (check == 1)
+           continue;
+        if (next > layout[current])
+	{
+           for (int x = 0; x < sameNum-1; x++)
+	   {
+               move (height-layout[current], i);
+	       printw("_");
+	       refresh();
+               i++;
+	   }
+	   for (int x = 2; x < layout[i]; x++)
+	   {
+              move(height-x, i);
+	      printw("|");
+	      refresh();
+	   }
+        }
+        else
+        {
+	   for (int x = 0; x < sameNum-2; x++)
+           {
+              move(height-layout[current], i);
+	      printw("_");
+	      refresh();
+	      i++;
+           }	
+           for (int x = 2; x < layout[i]; x++)
+           {
+              move(height-x, i);
+	      printw("|");
+              refresh();
+           }
+        }
+      }  
+    }
+  }
+}
+
+Defense* make_defense (int row, int col)
+{
+   Defense* defense;
+   defense = (Defense*)malloc(sizeof(Defense));
+   defense->row = row;
+   defense->col = col;
+   strcpy(defense->graphic, "#####");
+   return defense;
+}
+
+void *run1()
+{
+   defense  = make_defense(def_row, width/2);
+   pthread_mutex_lock(&p_mutex);
+   move(defense->row, defense->col);
+   printw(defense->graphic);
+   refresh();
+   pthread_mutex_unlock(&p_mutex);
+   int c;
+   while (1)
+   { 
+      c = getch();
+      if ((c == 68) && (((defense->col)-1) >= 0))
+      { 
+          pthread_mutex_lock(&p_mutex);
+          move(defense->row, defense->col);
+          printw("     ");
+	  refresh();
+          pthread_mutex_unlock(&p_mutex);
+	  (defense->col)--;
+          pthread_mutex_lock(&p_mutex);
+          move(defense->row, defense->col);
+          printw(defense->graphic);
+	  refresh();
+          pthread_mutex_unlock(&p_mutex);
+      }
+      else if ((c == 67) && ((defense->col)+1) < (width-4))
+      {
+          pthread_mutex_lock(&p_mutex);
+          move(defense->row, defense->col);
+          printw("     ");
+	  refresh();
+          pthread_mutex_unlock(&p_mutex);
+	  (defense->col)++;
+	  pthread_mutex_lock(&p_mutex);
+          move(defense->row, defense->col);
+          printw(defense->graphic);
+	  refresh();
+          pthread_mutex_unlock(&p_mutex);
+      }
+   }
+   if (defense != NULL)
+   {
+      free(defense);
+   }
+   return NULL;
+}
+
+Missile* make_missile (int row, int col)
+{
+   Missile* missile;
+   missile = (Missile*)malloc (sizeof (Missile)); 
+   missile-> row = row;
+   missile->col = col;
+   missile->graphic = "|";
+   return missile;
+}
+
+void* run2 ()
+{
+   Missile* missile;
+   missile = make_missile (1, width/2);
+   int row = 0;
+   while (row <= height-2)
+   {
+      pthread_mutex_lock(&p_mutex);
+      move(defense->row, defense->col);
+      printw(defense->graphic);
+      refresh();
+      pthread_mutex_unlock(&p_mutex);
+      sleep(1);
+      pthread_mutex_lock(&p_mutex);
+      move(defense->row, defense->col);
+      printw(" ");
+      refresh();
+      pthread_mutex_unlock(&p_mutex);
+      row++;
+   }
+}
+
+int main(int argc, char *argv[])
+{
+  if (argc != 2)
+  {
+    fprintf(stderr, "Usage: threads game-file\n");
+    exit(EXIT_FAILURE);
+  }
+  struct winsize w;
+  ioctl (0, TIOCGWINSZ, &w);
+  width = w.ws_col;
+  height = w.ws_row;
+  FILE *fp;
+  char *defence = malloc(81 * sizeof(char));
+  char *attack = malloc(81 * sizeof(char));
+  char *missile = malloc(1000 * sizeof(char));
+  int *layout = malloc(width * sizeof(int));
+  int missiles = 0;
+  int count = 0; 
+  int c;
+  fp = fopen(argv[1], "r");
+  if (fp == NULL)
+  {
+    fprintf(stderr, "Error: missing defencer name.\n");
+    fclose(fp);
+    free(defence);
+    free(attack);
+    free(missile);
+    exit(EXIT_FAILURE);
+  }
+  while((c = fgetc(fp)) != EOF)
+  {
+    if(c == '#')
+    {
+      while ((c = fgetc(fp)) != '\n'){}
+    }
+    else
+    {
+      if (count == 0)
+      {
+        if (c == ' ')
+        {
+          while ((c = fgetc(fp)) != ' '){}
+        }
+        int i = 0;
+        defence[i] = (char)c;
+        i++;
+        while ((c= fgetc(fp)) != '\n')
+        {
+          defence[i] = (char)c;
+          i++;
+        }
+        count++;
+      }
+      else if (count == 1)
+      {
+        if (c == ' ')
+        {
+          while ((c = fgetc(fp)) != ' '){}
+        }
+        int j = 0;
+        attack[j] = (char)c;
+        j++;
+        while ((c = fgetc(fp)) != '\n')
+        {
+          attack[j] = (char)c;
+          j++;
+        }
+        count++;
+      }
+      else if (count == 2)
+      {
+        int k = 0;
+        if (c == ' ')
+        {
+          while ((c = fgetc(fp)) != ' '){}
+        }
+        if (c == '-')
+        {
+          fprintf(stderr, "Error: missile specification < 0.");
+          fclose(fp);
+          free(defence);
+          free(attack);
+          free(missile);
+          exit(EXIT_FAILURE);
+        }
+        if (isdigit(c))
+        {
+          missile[k] = c;
+          k++;
+          count++;
+        }
+        while ((c = fgetc(fp)) != '\n' && c != ' ')
+        {  
+          if (isdigit(c))
+          {
+            missile[k] = c;
+            k++;
+          }
+        }
+        if (c == ' ')
+        {
+          while ((c = fgetc(fp)) != '\n'){}
+        }
+        sscanf(missile, "%d", &missiles);
+      }
+      else if (count == 3)
+      {
+        if (c == ' ')
+        {
+          while ((c = fgetc(fp)) != ' '){}
+        }
+        count++;
+        char *arr = malloc(height * sizeof(char));
+        int l = 0;
+        int h = 0; 
+        if (isdigit(c))
+        {
+          arr[h] = c; 
+          h++;
+        }
+        while ((c = fgetc(fp)) != ' ')
+        {
+          if (isdigit(c))
+          {
+            arr[h] = c; 
+            h++;
+          }
+        }
+        if (arr[0] != NULL)
+        {
+          sscanf(arr, "%d", &layout[l]);
+          l++;
+        }
+        free(arr);
+        while((l < width) && (c = fgetc(fp)) != EOF)
+        {
+          if (c != '\n' && c != ' ')
+          {
+            char* arr1 = malloc(height * sizeof(char));
+            h = 0;
+            if (isdigit(c))
+            {
+              arr1[h] = c; 
+              h++;
+            }
+            while ((c= fgetc(fp)) != ' ' && c != '\n' && c != EOF)
+            {
+              if (isdigit(c))
+              {
+                arr1[h] = c; 
+                h++;
+              }
+            }
+            if (arr1[0] != NULL)
+            {
+              sscanf(arr1, "%d", &layout[l]);
+              l++;
+            }
+            free(arr1);
+          }
+        }
+        if (l < (width-1))
+        {
+          for (int n = l; n < width; n++)
+          {
+            layout[n] = 2;
+          }
+        }
+       //printf("width: %d, l: %d\n", width, l);
+      }
+    }
+  }
+  if (count == 1)
+  {
+    fprintf(stderr, "Error: missing attacker name.\n");
+    fclose(fp);
+    free(defence);
+    free(attack);
+    free(missile);
+    exit(EXIT_FAILURE);
+  }
+  if (count == 2)
+  {
+    fprintf(stderr, "Error: missing missile specification.\n");
+    fclose(fp);
+    free(defence);
+    free(attack);
+    free(missile);
+    exit(EXIT_FAILURE);
+  }  
+  if (count == 3)
+  {
+    fprintf(stderr, "Error: missing city layout.\n");
+    fclose(fp);
+    free(defence);
+    free(attack);
+    free(missile);
+    exit(EXIT_FAILURE);
+  }
+  //printf("%s\n%s\n%d\n", defence, attack, missiles);
+  for (int a = 0; a < width; a++)
+  {
+    if (def_row < layout[a])
+    {
+       def_row = layout[a];
+    }
+  }
+  config_building(layout);
+  pthread_t def;
+  pthread_t missiles;
+  pthread_create(&def, NULL, run1, NULL);
+  pthread_create(&missiles, NULL, run2, NULL);
+  pthread_join(missiles, NULL);
+  pthread_join(def, NULL);
+  fclose(fp);
+  refresh();
+  getch();
+  endwin();
+  free(defence);
+  free(attack);
+  free(missile);
+  free(layout);
+  exit(EXIT_SUCCESS);
+}

@@ -1,0 +1,111 @@
+commit 3461d4681aeb25e4861de42f1098098b3fe4a513
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Dec 8 20:54:00 2018 -0500
+
+      Code indentated.
+
+commit f8cf973f28db9dfe4d311830029e66973323399f
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Dec 8 20:02:11 2018 -0500
+
+      I freed defense twice therefore, removed one free. Now I have no
+    valgrind errors.
+
+commit b2bb4bb0d3945395293f6d0c216630cd03366606
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Dec 8 16:30:41 2018 -0500
+
+      Added sleep(1) before creating attacker thread so that defender thread
+    gets time to create properly.
+
+commit c3a102feffcca5543fa2def05144fbe1a6488585
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Dec 8 11:57:03 2018 -0500
+
+      Changed sscanf to atoi for converting a string to an integer.
+
+commit d40b6218decbc31f633be51888c488a95019901e
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 22:37:22 2018 -0500
+
+      Fixed the lenght of defense.
+
+commit 14a0a9733c8c479baa8d93b2d500f9713d09e6a9
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 21:22:16 2018 -0500
+
+      Fixed the issue with reading of the first character and exiting the
+    program if the file exists but has nothing in it.
+
+commit 60a69a137a4e87dea28516e6b44f1f25a6ba92e7
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 21:01:29 2018 -0500
+
+      Fixed error checking erroes.
+
+commit c456d9e25c0a378e26fc719ebc99c85e40c72206
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 18:14:07 2018 -0500
+
+      Changed the format of the code documentation to the given format in
+    the project documentation.
+
+commit 6f985d522ef1573b53c8a064de38701b770deaa8
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 14:17:42 2018 -0500
+
+      Done documenting my code.
+
+commit c230afd95101d81716971c43fa0e6f78852aad33
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 10:36:28 2018 -0500
+
+      Both the missiles and defense threads working fine. Changed the speed
+    of missiles(randomized the speed).
+
+commit 7cf5f9e7e969d7878600696065b5be7700862069
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 02:41:08 2018 -0500
+
+      Created given number of missiles in the file (created given number of
+    missiles number of threads and stored them in an array anf joint them)
+    with proper interaction of them with defense sheild and buildings.
+
+commit 56ab87dfbbcc92aa5e931f779b3c49ab9984a124
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Fri Dec 7 01:09:31 2018 -0500
+
+      Created a single missile (one single thread) and done different
+    operations when the missile hit the building or the defense sheild
+
+commit 1428fed787ad7f25d8d0eeb9241b82ff0cad6e52
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Thu Dec 6 21:36:51 2018 -0500
+
+      Created the defense sheild that moves left and right according to
+    user's input. This is a thread.
+
+commit 6948517d756c697a79eda64269a07b280489213b
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Wed Dec 5 20:34:29 2018 -0500
+
+      Done with city scape layout.
+
+commit 51f6e512d938deb97c1d3d795c2b39759fb5b533
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Wed Dec 5 14:14:58 2018 -0500
+
+      Try to build the city scape. Made a different function to draw the
+    city scape. Almost done with it.
+
+commit b16324831357b4aa59125ed95bd2cbcb221faea2
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Nov 24 21:25:49 2018 -0500
+
+    Initial checkin
+
+commit 23d6a190ace5bbd8b23473a0313cf4b679d5e57e
+Author: Tejaswini Ramnath Jagtap <trj8497@cs.rit.edu>
+Date:   Sat Nov 24 21:22:25 2018 -0500
+
+    Initial checkin
